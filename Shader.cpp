@@ -41,9 +41,6 @@ namespace Crystal {
             vertexCode = vShaderStream.str();
             fragmentCode = fShaderStream.str();
 
-            std::cout << "Vertex Shader: \n" << vertexCode << std::endl;
-            std::cout << "Fragment Shader:  \n" << fragmentCode << std::endl;
-
         } catch (std::ifstream::failure e) {
             std::cout << "Error occured when parsing shaders." << std::endl;
             std::cout << e.what() << std::endl;
