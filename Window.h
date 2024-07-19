@@ -19,9 +19,6 @@ namespace Crystal {
         void SwapBuffers();
         void PollEvents();
         void ClearCanvas();
-
-        void Render(Shader& shader, const std::vector<Mesh*>& meshes);
-
         void TerminateGLFW();
 
     private:

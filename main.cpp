@@ -19,10 +19,12 @@ int main(void) {
     std::vector<Crystal::Mesh*> meshes = { &rectangle };
 
     while(!window.ShouldClose()) {
+        window.ClearCanvas();
 
-        window.Render(shader, meshes);
+        /* Rendering here */
+
         window.PollEvents();
-
+        window.SwapBuffers();
     }
 
     glfwTerminate();

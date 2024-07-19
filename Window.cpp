@@ -38,17 +38,6 @@ namespace Crystal {
         }
     }
 
-    void Window::Render(Shader& shader, const std::vector<Mesh*>& meshes) {
-        ClearCanvas();
-        shader.Use();
-
-        for (const auto& mesh : meshes) {
-            mesh->Draw();
-        }
-
-        SwapBuffers();
-    }
-
     bool Window::ShouldClose() {
         return glfwWindowShouldClose(window);
     }

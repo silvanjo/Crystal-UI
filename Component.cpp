@@ -40,8 +40,69 @@ namespace Crystal {
         }
     }
 
-    void EventHandler(Component::EventType event, float x, float y) {
-        /* TODO: Implement event handling */
+    void Component::Update(float x, float y, bool is_left_click) {
+        this->mouse_x = x;
+        this->mouse_y = y;
+
+        if (!this->is_clicked && IsMouseClicked(x, y, is_left_click)) {
+            this->is_clicked = true;
+            HandleEvent(EventType::MOUSE_CLICK);
+        } else {
+            this->is_clicked = false;
+        }
+
+        if (IsMouseReleased(x, y, is_left_click, this->prev_left_click)) {
+            HandleEvent(EventType::MOUSE_RELEASE);
+        }
+
+        if (!this->is_hovered && IsMouseHovered(x, y)) {
+            this->is_hovered = true;
+            HandleEvent(EventType::MOUSE_HOVER);
+        } else {
+            this->is_hovered = false;
+        }
+
+        if (IsMouseExited(x, y, this->prev_mouse_x, this->prev_mouse_y)) {
+            HandleEvent(EventType::MOUSE_HOVER_EXIT);
+        }
+
+        /* Update all children of this component */
+        for (auto child : this->children) {
+            child->Update(x, y, is_left_click);
+        }
+
+        this->prev_mouse_x = x;
+        this->prev_mouse_y = y;
+    }
+
+    void Component::Render(Shader& shader) {
+
+        this->mesh->Draw();
+
+        if (this->is_visible) {
+            for (auto child : this->children) {
+                child->Render(shader);
+            }
+        }
+    }
+
+    void Component::HandleEvent(Component::EventType event) {
+        switch (event) {
+            case Component::EventType::MOUSE_CLICK:
+                OnMouseClick();
+                break;
+            case Component::EventType::MOUSE_RELEASE:
+                OnMouseRelease();
+                break;
+            case Component::EventType::MOUSE_HOVER:
+                OnMouseHover();
+                break;
+            case Component::EventType::MOUSE_HOVER_EXIT:
+                OnMouseHoverExit();
+                break;
+            case Component::EventType::NO_EVENT:
+                break;
+        }
     }
 
     bool Component::IsPointInside(float x, float y) {
@@ -131,6 +192,50 @@ namespace Crystal {
             this->absolute_x = x;
             this->absolute_y = y;
         }
+    }
+
+    bool Component::IsMouseClicked(float x, float y, bool is_left_click) {
+        if (is_left_click && IsPointInside(x, y)) {
+            return true;
+        }
+        return false;
+    }
+
+    bool Component::IsMouseReleased(float x, float y, bool is_left_click, bool prev_left_click) {
+        if (prev_left_click && !is_left_click && IsPointInside(x, y)) {
+            return true;
+        }
+        return false; 
+    }
+
+    bool Component::IsMouseHovered(float x, float y) {
+        if (IsPointInside(x, y)) {
+            return true;
+        }
+        return false;
+    }
+
+    bool Component::IsMouseExited(float x, float y, float prev_x, float prev_y) {
+        if (IsPointInside(prev_x, prev_y) && !IsPointInside(x, y)) {
+            return true;
+        }
+        return false;
+    }
+
+    void Component::OnMouseClick() {
+        /* Do nothing */
+    }
+
+    void Component::OnMouseRelease() {
+        /* Do nothing */
+    }
+
+    void Component::OnMouseHover() {
+        /* Do nothing */
+    }
+
+    void Component::OnMouseHoverExit() {
+        /* Do nothing */
     }
 
     void Component::SetVisibility(bool is_visible) {

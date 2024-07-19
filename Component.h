@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 
+#include "Shader.h"
 #include "Shapes.h"
 
 /* 
@@ -20,13 +21,14 @@ namespace Crystal {
             MOUSE_CLICK,
             MOUSE_RELEASE,
             MOUSE_HOVER,
-            MOUSE_HOVER_EXIT
+            MOUSE_HOVER_EXIT,
+            NO_EVENT
         };
 
         Component(std::weak_ptr<Component> parent, float size_x, float size_y, float position_x, float position_y, bool relative = true);
         virtual ~Component() = default;
         
-        void EventHandler(EventType event, float x, float y);
+        void HandleEvent(EventType event);
         bool IsPointInside(float x, float y);
         void RemoveChild(std::shared_ptr<Component> child);
         void SetParent(std::weak_ptr<Component> parent);
@@ -42,8 +44,8 @@ namespace Crystal {
         float GetRelativeY();
         float GetSizeX();
         float GetSizeY();
-        virtual void Update() = 0;
-        virtual void Render() = 0;
+        virtual void Update(float x, float y, bool is_left_click);
+        virtual void Render(Shader& shader);
 
         /* Template functions */
         template<typename T, typename... Args>
@@ -59,6 +61,11 @@ namespace Crystal {
         virtual void OnMouseHover() = 0;
         virtual void OnMouseHoverExit() = 0;
 
+        bool IsMouseClicked(float x, float y, bool is_left_click);
+        bool IsMouseReleased(float x, float y, bool is_left_click, bool prev_left_click);
+        bool IsMouseHovered(float x, float y);
+        bool IsMouseExited(float x, float y, float prev_x, float prev_y);
+
     private:
         static int next_id;
         unsigned int id;
@@ -70,6 +77,10 @@ namespace Crystal {
         float relative_x, relative_y;
         float size_x, size_y;
         bool is_visible;
+
+        float mouse_x, mouse_y, prev_mouse_x, prev_mouse_y, prev_left_click;
+
+        bool is_hovered, is_clicked;
     };
 
 }
