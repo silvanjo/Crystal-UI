@@ -6,21 +6,22 @@
 namespace Crystal {
     int Component::next_id = 0;
 
-    Component::Component(std::weak_ptr<Component> parent, float size_x, float size_y, float position_x, float position_y, bool relative) {
+    Component::Component(std::shared_ptr<Component> parent, float size_x, float size_y, float position_x, float position_y, bool relative = true) {
         this->id = next_id++;
-
         this->parent = parent;
-
         this->size_x = size_x;
         this->size_y = size_y;
+        this->is_visible = true;
+
+        this->rectangle = std::make_unique<Rectangle>(size_x, size_y, position_x, position_y); 
 
         if (relative) {
             this->relative_x = position_x;
             this->relative_y = position_y;
             
-            if (auto p = parent.lock()) {
-                this->absolute_x = p->GetAbsoluteX() + position_x;
-                this->absolute_y = p->GetAbsoluteY() + position_y;
+            if (parent != nullptr) {
+                this->absolute_x = parent->GetAbsoluteX() + position_x;
+                this->absolute_y = parent->GetAbsoluteY() + position_y;
             } else {
                 this->absolute_x = position_x;
                 this->absolute_y = position_y;
@@ -29,10 +30,10 @@ namespace Crystal {
         } else {
             this->absolute_x = position_x;
             this->absolute_y = position_y;
-            
-            if (auto p = parent.lock()) {
-                this->relative_x = position_x - p->GetAbsoluteX();
-                this->relative_y = position_y - p->GetAbsoluteY();
+
+            if (parent != nullptr) {
+                this->relative_x = position_x - parent->GetAbsoluteX();
+                this->relative_y = position_y - parent->GetAbsoluteY();
             } else {
                 this->relative_x = position_x;
                 this->relative_y = position_y;
@@ -77,7 +78,7 @@ namespace Crystal {
 
     void Component::Render(Shader& shader) {
 
-        this->mesh->Draw();
+        this->rectangle->Draw();
 
         if (this->is_visible) {
             for (auto child : this->children) {
@@ -128,9 +129,7 @@ namespace Crystal {
         }
 
         /* If the provided child already has a parent, we remove that connection and instead this component as the new parent. */
-        if (auto p = child->GetParent().lock()) {
-            p->RemoveChild(child);
-        }
+        parent->RemoveChild(child);
         
         /* This this as the new parent */
         child->SetParent(this->shared_from_this());
@@ -146,12 +145,10 @@ namespace Crystal {
         }
     }
 
-    void Component::SetParent(std::weak_ptr<Component> parent) {
+    void Component::SetParent(std::shared_ptr<Component> parent) {
         /* Make sure the parent is not the same component as the cild */
-        if (auto p = parent.lock()) {
-            if (p.get() == this) {
-                throw std::invalid_argument("Parent cannot be the same as the child.");
-            }
+        if (parent.get() == this) {
+            throw std::invalid_argument("Parent cannot be the same as the child.");
         }
 
         this->parent = parent;
@@ -173,9 +170,9 @@ namespace Crystal {
     void Component::SetAbsolutePosition(float x, float y) {
         this->absolute_x = x;
         this->absolute_y = y;
-        if (auto p = parent.lock()) {
-            this->relative_x = x - p->GetAbsoluteX();
-            this->relative_y = y - p->GetAbsoluteY();
+        if (parent != nullptr) {
+            this->relative_x = x - parent->GetAbsoluteX();
+            this->relative_y = y - parent->GetAbsoluteY();
         } else {
             this->relative_x = x;
             this->relative_y = y;
@@ -185,9 +182,9 @@ namespace Crystal {
     void Component::SetRelativePosition(float x, float y) {
         this->relative_x = x;
         this->relative_y = y;
-        if (auto p = parent.lock()) {
-            this->absolute_x = p->GetAbsoluteX() + x;
-            this->absolute_y = p->GetAbsoluteY() + y;
+        if (parent != nullptr) {
+            this->absolute_x = parent->GetAbsoluteX() + x;
+            this->absolute_y = parent->GetAbsoluteY() + y;
         } else {
             this->absolute_x = x;
             this->absolute_y = y;
@@ -220,22 +217,6 @@ namespace Crystal {
             return true;
         }
         return false;
-    }
-
-    void Component::OnMouseClick() {
-        /* Do nothing */
-    }
-
-    void Component::OnMouseRelease() {
-        /* Do nothing */
-    }
-
-    void Component::OnMouseHover() {
-        /* Do nothing */
-    }
-
-    void Component::OnMouseHoverExit() {
-        /* Do nothing */
     }
 
     void Component::SetVisibility(bool is_visible) {

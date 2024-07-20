@@ -25,13 +25,17 @@ namespace Crystal {
             NO_EVENT
         };
 
-        Component(std::weak_ptr<Component> parent, float size_x, float size_y, float position_x, float position_y, bool relative = true);
+        Component(std::shared_ptr<Component> parent, float size_x, float size_y, float position_x, float position_y, bool relative);
         virtual ~Component() = default;
+
+        /* Don't allow copies from this class for now */
+        Component(const Component&) = delete;
+        Component& operator=(const Component&) = delete;
         
         void HandleEvent(EventType event);
         bool IsPointInside(float x, float y);
         void RemoveChild(std::shared_ptr<Component> child);
-        void SetParent(std::weak_ptr<Component> parent);
+        void SetParent(std::shared_ptr<Component> parent);
         std::weak_ptr<Component> GetParent();
         std::vector<std::shared_ptr<Component>> GetChildren();
         void SetSize(float x, float y);
@@ -69,17 +73,15 @@ namespace Crystal {
     private:
         static int next_id;
         unsigned int id;
-        std::weak_ptr<Component> parent;
-        std::unique_ptr<Mesh> mesh;
+        std::shared_ptr<Component> parent;
+        std::unique_ptr<Rectangle> rectangle;
         std::vector<std::shared_ptr<Component>> children;
         
         float absolute_x, absolute_y;
         float relative_x, relative_y;
         float size_x, size_y;
         bool is_visible;
-
         float mouse_x, mouse_y, prev_mouse_x, prev_mouse_y, prev_left_click;
-
         bool is_hovered, is_clicked;
     };
 

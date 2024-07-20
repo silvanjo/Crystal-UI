@@ -7,6 +7,7 @@
 #include "Mesh.h"
 #include "Shapes.h"
 #include "Shader.h"
+#include "Button.h"
 
 #include "Window.h"
 
@@ -14,14 +15,15 @@ int main(void) {
 
     Crystal::Window window(640, 480, "Crystal-UI");
     Crystal::Shader shader("Shader/VertexShader.glsl", "Shader/FragmentShader.glsl");
-    Crystal::Rectangle rectangle;
 
-    std::vector<Crystal::Mesh*> meshes = { &rectangle };
+    Crystal::Button button(std::shared_ptr<Crystal::Component>(), 0.0f, 0.0f, 0.5f, 0.5f, true);
 
     while(!window.ShouldClose()) {
         window.ClearCanvas();
 
+        shader.Use();
         /* Rendering here */
+        button.Render(shader);
 
         window.PollEvents();
         window.SwapBuffers();
