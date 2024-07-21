@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "Libs/glm/glm.hpp"
+
 /* 
 This class is a wrapper for the GLSL Vertex and Fragement Shader. It's purpose is to make 
 working with shaders easier by providing a simple interface to set uniforms and use the shader.
@@ -16,9 +18,10 @@ namespace Crystal {
         
         void Use();
 
-        void SetBool(const std::string& name, bool value) const;
-        void SetInt(const std::string& name, int value) const;
-        void SetFloat(const std::string& name, float value) const;
+        void SetBool(const std::string& name, bool value);
+        void SetInt(const std::string& name, int value);
+        void SetFloat(const std::string& name, float value);
+        void SetMatrix4(const std::string& name, const glm::mat4& matrix);
 
     private:
         unsigned int ID;

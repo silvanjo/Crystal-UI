@@ -25,6 +25,12 @@ namespace Crystal {
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+
+        this->transform_updated = true;
+        this->position = glm::vec2(0.0f, 0.0f);
+        this->scale = glm::vec2(1.0f, 1.0f);
+        this->rotation = 0.0f;
+        this->model = glm::mat4(1.0f);
     }
 
     Mesh::~Mesh() {
@@ -33,10 +39,53 @@ namespace Crystal {
         glDeleteBuffers(1, &EBO);
     }
 
-    void Mesh::Draw() {
+    void Mesh::Draw(Shader& shader) {
+
+        if (transform_updated) {
+            UpdateTransforms();
+        }
+
+        /* Set model matrix in vertex shader */
+        shader.SetMatrix4("model", this->model);
+
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+    }
+
+    void Mesh::UpdateTransforms() {
+        this->model = glm::mat4(1.0f);
+        this->model = glm::translate(this->model, glm::vec3(this->position, 0.0f));
+        this->model = glm::rotate(this->model, glm::radians(this->rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+        this->model = glm::scale(this->model, glm::vec3(this->scale, 1.0f));
+        this->transform_updated = false;
+    }
+
+    void Mesh::SetPosition(const glm::vec2& position) {
+        this->transform_updated = true;
+        this->position = position;
+    }
+
+    void Mesh::SetScale(const glm::vec2& scale) {
+        this->transform_updated = true;
+        this->scale = scale;
+    }
+
+    void Mesh::SetRotation(float angle) {
+        this->transform_updated = true;
+        this->rotation = angle;
+    }
+
+    glm::vec2 Mesh::GetPosition() {
+        return this->position;
+    }
+
+    glm::vec2 Mesh::GetScale() {
+        return this->scale;
+    }
+
+    float Mesh::GetRotation() {
+        return this->rotation;
     }
 
 }

@@ -1,7 +1,10 @@
 #include "Component.h"
 
+#include <iostream>
 #include <algorithm>
 #include <stdexcept>
+
+#include "Libs/glm/glm.hpp"
 
 namespace Crystal {
     int Component::next_id = 0;
@@ -39,6 +42,10 @@ namespace Crystal {
                 this->relative_y = position_y;
             }
         }
+
+        /* Set transforms for mesh */
+        this->rectangle->SetPosition(glm::vec2(this->absolute_x, this->absolute_y));
+        this->rectangle->SetScale(glm::vec2(this->size_x, this->size_y));
     }
 
     void Component::Update(float x, float y, bool is_left_click) {
@@ -78,7 +85,7 @@ namespace Crystal {
 
     void Component::Render(Shader& shader) {
 
-        this->rectangle->Draw();
+        this->rectangle->Draw(shader);
 
         if (this->is_visible) {
             for (auto child : this->children) {
