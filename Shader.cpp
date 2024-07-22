@@ -76,10 +76,6 @@ namespace Crystal {
         glDeleteShader(fragmentShader);
     }
 
-    void Shader::SetMatrix4(const std::string& name, const glm::mat4& matrix) {
-        glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, &matrix[0][0]);
-    }
-
     void Shader::Use() {
         glUseProgram(this->ID);
     }
@@ -94,6 +90,14 @@ namespace Crystal {
 
     void Shader::SetFloat(const std::string& name, float value) {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+    }
+
+    void Shader::SetVector4(const std::string& name, const glm::vec4& vector) {
+        glUniform4fv(glGetUniformLocation(this->ID, name.c_str()), 1, &vector[0]);
+    }
+
+    void Shader::SetMatrix4(const std::string& name, const glm::mat4& matrix) {
+        glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, &matrix[0][0]);
     }
 
     void Shader::CheckCompileErrors(unsigned int shader, std::string type) {

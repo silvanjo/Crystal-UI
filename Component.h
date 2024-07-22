@@ -42,6 +42,7 @@ namespace Crystal {
         void SetAbsolutePosition(float x, float y);
         void SetRelativePosition(float x, float y);
         void SetVisibility(bool is_visible);
+        void SetColor(float r, float g, float b, float a);
         float GetAbsoluteX();
         float GetAbsoluteY();
         float GetRelativeX();

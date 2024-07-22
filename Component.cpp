@@ -16,8 +16,6 @@ namespace Crystal {
         this->size_y = size_y;
         this->is_visible = true;
 
-        this->rectangle = std::make_unique<Rectangle>(size_x, size_y, position_x, position_y); 
-
         if (relative) {
             this->relative_x = position_x;
             this->relative_y = position_y;
@@ -44,8 +42,10 @@ namespace Crystal {
         }
 
         /* Set transforms for mesh */
+        this->rectangle = std::make_unique<Rectangle>(size_x, size_y, position_x, position_y); 
         this->rectangle->SetPosition(glm::vec2(this->absolute_x, this->absolute_y));
         this->rectangle->SetScale(glm::vec2(this->size_x, this->size_y));
+        this->rectangle->SetColor(0.5f, 0.5f, 0.5f, 1.f);
     }
 
     void Component::Update(float x, float y, bool is_left_click) {
@@ -161,6 +161,14 @@ namespace Crystal {
         this->parent = parent;
     }
 
+    void Component::SetColor(float r, float g, float b, float a = 1.f) {
+        this->rectangle->SetColor(r, g, b, a);
+    }
+
+    void Component::SetVisibility(bool is_visible) {
+        this->is_visible = is_visible;
+    }
+
     std::weak_ptr<Component> Component::GetParent() {
             return this->parent;
     }
@@ -224,10 +232,6 @@ namespace Crystal {
             return true;
         }
         return false;
-    }
-
-    void Component::SetVisibility(bool is_visible) {
-        this->is_visible = is_visible;
     }
 
     float Component::GetAbsoluteX() {

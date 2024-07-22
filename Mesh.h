@@ -18,6 +18,7 @@ namespace Crystal {
         void SetPosition(const glm::vec2& position);
         void SetScale(const glm::vec2& scale);
         void SetRotation(float angle);
+        void SetColor(float r, float g, float b, float a);
         glm::vec2 GetPosition();
         glm::vec2 GetScale();
         float GetRotation();
@@ -32,6 +33,7 @@ namespace Crystal {
         bool transform_updated;
         /* Transforms */
         glm::mat4 model;
+        glm::vec4 color;
         glm::vec2 position;
         glm::vec2 scale;
         float rotation;

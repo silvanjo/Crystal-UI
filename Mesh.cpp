@@ -27,6 +27,7 @@ namespace Crystal {
         glBindVertexArray(0);
 
         this->transform_updated = true;
+        this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
         this->position = glm::vec2(0.0f, 0.0f);
         this->scale = glm::vec2(1.0f, 1.0f);
         this->rotation = 0.0f;
@@ -47,6 +48,7 @@ namespace Crystal {
 
         /* Set model matrix in vertex shader */
         shader.SetMatrix4("model", this->model);
+        shader.SetVector4("color", this->color);
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -74,6 +76,10 @@ namespace Crystal {
     void Mesh::SetRotation(float angle) {
         this->transform_updated = true;
         this->rotation = angle;
+    }
+
+    void Mesh::SetColor(float r, float g, float b, float a = 1) {
+        this->color = glm::vec4(r, g, b, a);
     }
 
     glm::vec2 Mesh::GetPosition() {
